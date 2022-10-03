@@ -1,3 +1,6 @@
 [submodule "backend/authentication-fastapi"]
 	path = backend/authentication-fastapi
 	url = git@github.com:keishi0510fujii/authentication-backend-fastapi.git
+[submodule "frontend/authentication-nuxt3"]
+	path = frontend/authentication-nuxt3
+	url = git@github.com:keishi0510fujii/authentication-frontend-nuxt3.git
