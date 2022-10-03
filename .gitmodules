@@ -1,0 +1,3 @@
+[submodule "backend/authentication-fastapi"]
+	path = backend/authentication-fastapi
+	url = git@github.com:keishi0510fujii/authentication-backend-fastapi.git
