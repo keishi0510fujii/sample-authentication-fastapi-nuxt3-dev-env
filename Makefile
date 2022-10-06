@@ -9,7 +9,6 @@ setup:
 	@docker pull mysql:8.0
 #	キャッシュ以外は削除
 	@docker stop sample_authentication_frontend_nuxt3 && docker rm sample_authentication_frontend_nuxt3
-	@docker rmi -f mysql:8.0 sample_authentication_frontend_nuxt3:setup
 
 IMAGES=`docker images 'sample_authentication*' -q`
 destroy:
