@@ -1,0 +1,84 @@
+version: '3.9'
+services:
+  backend-fastapi:
+    build: 
+      context: ./backend/authentication-fastapi
+      target: ${TARGET:-dev}
+    tty: true
+    stdin_open: true
+    image: sample_authentication_backend_fastapi:${TAG:-dev}
+    container_name: sample_authentication_backend_fastapi
+    volumes:
+      - ./backend/authentication-fastapi/app:/opt/app
+      - sample-authentication-pip-package-vol:/opt/pypy/lib/pypy3.9/site-packages:ro
+    ports:
+      - "8008:8000"
+    depends_on:
+      - rdb
+      - test-rdb
+    entrypoint: /usr/bin/tini -- uvicorn
+    command: main:app --reload --host 0.0.0.0
+  
+  frontend-nuxt3:
+    build:
+      context: ./frontend/authentication-nuxt3
+      target: ${TARGET:-dev}
+    tty: true
+    stdin_open: true
+    image: sample_authentication_frontend_nuxt3:${TAG:-dev}
+    container_name: sample_authentication_frontend_nuxt3
+    volumes:
+      - ./frontend/authentication-nuxt3/app:/app
+    ports:
+      - "3001:3000" ## nuxt
+      - "6007:6006" ## storybook
+      - "24679:24678" ## リロードエラーの対策
+    entrypoint: /sbin/tini -- npm
+    command: run dev
+
+    # proxy-nginx:
+    
+  rdb:
+    image: mysql:8.0
+    container_name: sample_authentication_rdb_mysql8
+    tty: true
+    stdin_open: true
+    ports:
+      - "33308:3306"
+    platform: linux/x86_64
+    environment: 
+      MYSQL_DATABASE: sample-authentication
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devsecret
+    volumes:
+      - sample-authentication-dev-mysql-vol:/var/lib/mysql
+
+  test-rdb:
+    image: mysql:8.0
+    container_name: sample_authentication_test_rdb_mysql8
+    tty: true
+    stdin_open: true
+    ports:
+      - "33309:3306"
+    platform: linux/x86_64
+    environment: 
+      MYSQL_DATABASE: sample-authentication
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testsecret
+    volumes:
+      - sample-authentication-test-mysql-vol:/var/lib/mysql
+
+volumes:
+  sample-authentication-pip-package-vol:
+  sample-authentication-dev-mysql-vol:
+  sample-authentication-test-mysql-vol:
+
+networks:
+  sample-authentication-front-tier:
+    driver: bridge
+    name: sample-authentication-front-fier
+  sample-authentication-back-tier:
+    driver: bridge
+    name: sample-authentication-back-tier
