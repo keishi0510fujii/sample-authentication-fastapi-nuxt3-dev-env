@@ -5,8 +5,6 @@ setup:
 	@docker run --name sample_authentication_frontend_nuxt3 -itd sample_authentication_frontend_nuxt3:setup
 	@docker cp -a sample_authentication_frontend_nuxt3:/app/node_modules ./frontend/authentication-nuxt3/app/
 	@docker cp -a sample_authentication_frontend_nuxt3:/app/.nuxt ./frontend/authentication-nuxt3/app/
-#	mysqlのイメージをpull
-	@docker pull mysql:8.0
 #	キャッシュ以外は削除
 	@docker stop sample_authentication_frontend_nuxt3 && docker rm sample_authentication_frontend_nuxt3
 
