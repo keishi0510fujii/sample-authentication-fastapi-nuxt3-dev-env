@@ -60,7 +60,10 @@ services:
     command: -g "daemon off;"
     
   rdb:
-    image: mysql:8.0
+    build:
+      context: ./backend/authentication-fastapi
+      dockerfile: Dockerfile.rdb
+    image: sample_authentication_rdb_mysql8:dev
     container_name: sample_authentication_rdb_mysql8
     tty: true
     stdin_open: true
@@ -78,7 +81,10 @@ services:
       - sample-authentication-back-tier
 
   test-rdb:
-    image: mysql:8.0
+    build:
+      context: ./backend/authentication-fastapi
+      dockerfile: Dockerfile.rdb
+    image: sample_authentication_test_rdb_mysql8:dev
     container_name: sample_authentication_test_rdb_mysql8
     tty: true
     stdin_open: true
