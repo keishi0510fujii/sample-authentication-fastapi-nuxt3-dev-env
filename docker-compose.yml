@@ -16,6 +16,8 @@ services:
     depends_on:
       - rdb
       - test-rdb
+    networks:
+      - sample-authentication-back-tier
     entrypoint: /usr/bin/tini -- uvicorn
     command: main:app --reload --host 0.0.0.0
   
@@ -33,10 +35,29 @@ services:
       - "3001:3000" ## nuxt
       - "6007:6006" ## storybook
       - "24679:24678" ## リロードエラーの対策
+    networks:
+      - sample-authentication-front-tier
     entrypoint: /sbin/tini -- npm
     command: run dev
 
-    # proxy-nginx:
+  proxy-nginx:
+    build:
+      context: ./proxy/nginx
+      target: ${TARGET:-dev}
+    stdin_open: true
+    tty: true
+    image: sample_authentication_proxy_nginx:${TAG:-dev}
+    container_name: sample_authentication_proxy_nginx
+    ports:
+      - "1025:1025"
+    networks:
+      - sample-authentication-front-tier
+      - sample-authentication-back-tier
+    depends_on:
+      - backend-fastapi
+      - frontend-nuxt3
+    entrypoint: /sbin/tini -- nginx
+    command: -g "daemon off;"
     
   rdb:
     image: mysql:8.0
@@ -53,6 +74,8 @@ services:
       MYSQL_PASSWORD: devsecret
     volumes:
       - sample-authentication-dev-mysql-vol:/var/lib/mysql
+    networks:
+      - sample-authentication-back-tier
 
   test-rdb:
     image: mysql:8.0
@@ -69,6 +92,8 @@ services:
       MYSQL_PASSWORD: testsecret
     volumes:
       - sample-authentication-test-mysql-vol:/var/lib/mysql
+    networks:
+      - sample-authentication-back-tier
 
 volumes:
   sample-authentication-pip-package-vol:
