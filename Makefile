@@ -7,6 +7,7 @@ setup:
 	@docker cp -a sample_authentication_frontend_nuxt3:/app/.nuxt ./frontend/authentication-nuxt3/app/
 #	キャッシュ以外は削除
 	@docker stop sample_authentication_frontend_nuxt3 && docker rm sample_authentication_frontend_nuxt3
+	@docker rmi -f `docker images 'sample_authentication*' -q`
 
 IMAGES=`docker images 'sample_authentication*' -q`
 destroy:
